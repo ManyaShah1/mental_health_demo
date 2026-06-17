@@ -10,14 +10,23 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          question,
-          style: const TextStyle(
-            fontSize: 20,
-          ),
+    return Container(
+      width: double.infinity,
+      padding:
+          const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(
+          0xFFF4EEFF,
+        ),
+        borderRadius:
+            BorderRadius.circular(24),
+      ),
+      child: Text(
+        question,
+        style: const TextStyle(
+          fontSize: 22,
+          fontWeight:
+              FontWeight.w600,
         ),
       ),
     );
