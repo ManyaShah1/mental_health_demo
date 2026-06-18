@@ -1,21 +1,32 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../models/text_analysis_result.dart';
 
 class AIService {
-  Future<TextAnalysisResult> analyzeText(
-    String text,
-  ) async {
-    await Future.delayed(
-      const Duration(seconds: 2),
-    );
+  static const String baseUrl = 'http://127.0.0.1:8000';
 
-    return const TextAnalysisResult(
-      sentiment: 'Negative',
-      themes: [
-        'Stress',
-        'Fatigue',
-        'Anxiety',
-      ],
-      riskFlag: false,
-    );
+  /// Sends the collected answers map to the backend for full analysis evaluation
+  Future<TextAnalysisResult> analyzeText(Map<String, dynamic> answers) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/analyze'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'answers': answers}),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return TextAnalysisResult.fromJson(data);
+      } else {
+        throw Exception('Server error during assessment analysis');
+      }
+    } catch (e) {
+      print("Error in AIService.analyzeText: $e");
+      return const TextAnalysisResult(
+        severity: 'Unknown',
+        summary: 'Unable to analyze assessment.',
+        recommendations: [],
+      );
+    }
   }
 }
