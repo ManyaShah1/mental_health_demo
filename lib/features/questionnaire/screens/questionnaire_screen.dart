@@ -65,10 +65,10 @@ class _QuestionnaireScreenState
 
                     ProgressWidget(
                       progress:
-                          currentIndex / 8,
+                          currentIndex / 6,
                       current:
                           currentIndex,
-                      total: 8,
+                      total: 6,
                     ),
 
                     const SizedBox(
