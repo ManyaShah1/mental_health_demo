@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class QuestionnaireService {
   static const String baseUrl =
-      'https://mental-health-demo.onrender.com/';
+      'https://mental-health-demo.onrender.com';
 
   Future<Map<String, dynamic>>
       getNextQuestion(
