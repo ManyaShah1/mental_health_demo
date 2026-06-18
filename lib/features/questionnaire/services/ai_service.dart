@@ -23,9 +23,9 @@ class AIService {
     } catch (e) {
       print("Error in AIService.analyzeText: $e");
       return const TextAnalysisResult(
-        severity: 'Unknown',
-        summary: 'Unable to analyze assessment.',
-        recommendations: [],
+        sentiment: 'Unknown',
+        themes: ['Unable to analyze assessment summary at this time.'],
+        riskFlag: false,
       );
     }
   }

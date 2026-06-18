@@ -1,10 +1,9 @@
+import 'package:flutter/material.dart';
 import '../models/question.dart';
 import '../services/questionnaire_service.dart';
 
-class QuestionnaireController {
+class QuestionnaireController extends ChangeNotifier {
   final QuestionnaireService _service = QuestionnaireService();
-  
-  // Tracks your exact session history: {"mood_1": "Several days"}
   final Map<String, dynamic> answers = {};
 
   Question? _currentQuestion;
@@ -15,9 +14,9 @@ class QuestionnaireController {
   bool get isFinished => _isFinished;
   bool get isLoading => _isLoading;
 
-  /// Call this when the Questionnaire screen loads (e.g. inside initState)
   Future<void> initializeQuestionnaire() async {
     _isLoading = true;
+    notifyListeners();
     try {
       final data = await _service.getNextQuestion(answers);
       _handleBackendResponse(data);
@@ -25,25 +24,24 @@ class QuestionnaireController {
       print("Error initializing assessment: $e");
     } finally {
       _isLoading = false;
+      notifyListeners();
     }
   }
 
-  /// Call this when the user chooses an option and clicks 'Next'
   Future<void> answerQuestion(dynamic selectedOption) async {
     if (_currentQuestion == null) return;
 
     _isLoading = true;
+    notifyListeners();
     try {
-      // 1. Record the response
       answers[_currentQuestion!.id] = selectedOption;
-
-      // 2. Fetch the next step dynamically from the API
       final data = await _service.getNextQuestion(answers);
       _handleBackendResponse(data);
     } catch (e) {
       print("Error updating question sequence: $e");
     } finally {
       _isLoading = false;
+      notifyListeners();
     }
   }
 
