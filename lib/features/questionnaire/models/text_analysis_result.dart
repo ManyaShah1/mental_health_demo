@@ -1,20 +1,31 @@
 class TextAnalysisResult {
-  final String sentiment;
-  final List<String> themes;
-  final bool riskFlag;
+  final int totalScore;
+  final String severity;
+  final String summary;
+  final Map<String, int> metrics;
+  final List<String> recommendations;
 
   const TextAnalysisResult({
-    required this.sentiment,
-    required this.themes,
-    required this.riskFlag,
+    required this.totalScore,
+    required this.severity,
+    required this.summary,
+    required this.metrics,
+    required this.recommendations,
   });
 
   factory TextAnalysisResult.fromJson(Map<String, dynamic> json) {
-    // Map the backend's severity -> sentiment, and recommendations -> themes gracefully
     return TextAnalysisResult(
-      sentiment: json['severity'] as String? ?? json['sentiment'] as String? ?? 'Low',
-      themes: List<String>.from(json['recommendations'] ?? json['themes'] ?? []),
-      riskFlag: json['riskFlag'] as bool? ?? (json['severity'] == 'High'),
+      totalScore: json['total_score'] as int? ?? json['totalScore'] as int? ?? 0,
+      severity: json['severity'] as String? ?? 'Low',
+      summary: json['summary'] as String? ?? '',
+      metrics: Map<String, int>.from(json['metrics'] ?? {
+        "Mood Balance": 0,
+        "Sleep Architecture": 0,
+        "Stress Resilience": 0,
+        "Cognitive Focus": 0,
+        "Anxiety Management": 0
+      }),
+      recommendations: List<String>.from(json['recommendations'] ?? []),
     );
   }
 }

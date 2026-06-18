@@ -12,67 +12,165 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Assessment Results'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
       body: FutureBuilder<TextAnalysisResult>(
         future: _aiService.analyzeText(answers),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF23C4C8)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF23C4C8)),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Analyzing responses...',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  )
+                ],
               ),
             );
           }
 
           if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text('Error generating evaluation dashboard report.'));
+            return const Center(child: Text('Error generating evaluation report.'));
           }
 
           final report = snapshot.data!;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Card(
-                  color: const Color(0xFFF4EEFF),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.analytics, color: Color(0xFF23C4C8), size: 36),
-                        const SizedBox(width: 16),
-                        Column(
+          return SafeArea(
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 550),
+                padding: const EdgeInsets.all(24),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Assessment",
+                        style: TextStyle(fontSize: 14, color: Colors.grey, letterSpacing: 1.2),
+                      ),
+                      const Text(
+                        "Your Insights",
+                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      const SizedBox(height: 25),
+
+                      // Numerical Score Circular Dashboard Card
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: const Color(0 deeds0E2E8F0)),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              "${report.totalScore}",
+                              style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: Color(0xFF23C4C8)),
+                            ),
+                            const Text(
+                              "Overall Wellness Score",
+                              style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: _getSeverityColor(report.severity).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "${report.severity} Severity Profile",
+                                style: TextStyle(color: _getSeverityColor(report.severity), fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+
+                      // Clinical Narrative Summary Analysis
+                      const Text("Summary Analysis", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      Text(
+                        report.summary,
+                        style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.5),
+                      ),
+                      const SizedBox(height: 30),
+
+                      // 5 Detailed Progress Metrics Section
+                      const Text("Diagnostic Metrics", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 15),
+                      ...report.metrics.entries.map((entry) => _buildMetricRow(entry.key, entry.value)),
+                      const SizedBox(height: 30),
+
+                      // Dynamic Treatment Plan Recommendations Card Block
+                      const Text("Actionable Frameworks", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 15),
+                      ...report.recommendations.map((rec) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Severity Level', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                            Text(
-                              report.sentiment, // Maps to severity key string returned by Gemini
-                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                            const Icon(Icons.check_circle_outline, color: Color(0xFF23C4C8), size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(rec, style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.4)),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      )),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 25),
-                const Text('Summary Metrics', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                Text(
-                  report.themes.isNotEmpty ? report.themes.join(', ') : 'No data summarized.',
-                  style: const TextStyle(fontSize: 15, color: Colors.black87),
-                ),
-              ],
+              ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Color _getSeverityColor(String severity) {
+    switch (severity.toLowerCase()) {
+      case 'high':
+        return Colors.redAccent;
+      case 'moderate':
+        return Colors.orangeAccent;
+      default:
+        return const Color(0xFF23C4C8);
+    }
+  }
+
+  Widget _buildMetricRow(String name, int val) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.between,
+            children: [
+              Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+              Text("$val/10", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: val / 10,
+              minHeight: 8,
+              backgroundColor: const Color(0xFFF1F5F9),
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF23C4C8)),
+            ),
+          )
+        ],
       ),
     );
   }

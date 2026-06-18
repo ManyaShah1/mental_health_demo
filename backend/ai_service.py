@@ -47,27 +47,40 @@ Return JSON only matching this format:
 
 def analyze_assessment(answers):
     """
-    Compiles a deeply contextual and non-generic evaluation report strictly 
-    tailored to the cumulative pattern of the user's answers.
+    Compiles a deeply contextual, quantitative mental health dashboard report
+    based on the user's 15 responses.
     """
     prompt = f"""
-You are an expert clinical mental health analyst compiling an evaluation report.
+You are an expert clinical mental health analyst compiling an evaluation dashboard.
 Analyze these specific questionnaire responses provided by the user:
 {answers}
 
-CRITICAL INSTRUCTIONS FOR UNIQUE RESULTS:
-1. Do NOT reuse generic templates or standard blanket statements.
-2. The "summary" must be custom-tailored to the intersections of their answers. For example, if they have poor sleep AND low focus, comment explicitly on how sleep deprivation is degrading cognitive clarity.
-3. Recommendations MUST match the severity and explicitly mention details derived from their worst-scoring responses.
-4. Output "severity" strictly based on cumulative patterns: High (constant severe symptoms), Moderate (frequent or intermittent struggles), Low (mostly stable/mild fluctuations).
+CRITICAL DATA REQUISITES:
+1. Calculate an overall "total_score" out of 100 based on symptom severity trends.
+2. Break down the assessment into exactly 5 specific structural sub-metrics scored out of 10:
+   - Mood Balance
+   - Sleep Architecture
+   - Stress Resilience
+   - Cognitive Focus
+   - Anxiety Management
+3. Provide a deeply personal, customized 3-4 sentence "summary" cross-referencing their lowest metric scores.
+4. Provide 3 specific, non-generic recommendations.
 
-Return JSON only matching this exact schema:
+Return JSON matching this exact schema:
 {{
+  "total_score": 72,
   "severity": "Low/Moderate/High",
-  "summary": "Write a deeply specific 3-4 sentence analysis explaining the exact interaction of their symptoms.",
+  "summary": "Your responses indicate standard mood stabilization with notable disruptions around deep sleep architecture...",
+  "metrics": {{
+    "Mood Balance": 8,
+    "Sleep Architecture": 4,
+    "Stress Resilience": 7,
+    "Cognitive Focus": 5,
+    "Anxiety Management": 6
+  }},
   "recommendations": [
-      "Custom actionable recommendation statement 1 based on their explicit options.",
-      "Custom actionable recommendation statement 2 based on their explicit options."
+    "Prioritize a strict wind-down routine 45 minutes before sleep.",
+    "Implement time-blocking techniques to protect cognitive bandwidth during drop-offs."
   ]
 }}
 """
@@ -77,15 +90,19 @@ Return JSON only matching this exact schema:
             generation_config={"response_mime_type": "application/json"}
         )
         text = response.text.strip()
-        result = json.loads(text)
-        return result
+        return json.loads(text)
     except Exception as e:
         print(f"JSON Parsing/API Error in analyze_assessment: {e}")
         return {
+            "total_score": 0,
             "severity": "Unknown",
-            "summary": "Unable to safely process and analyze parameters at this time.",
-            "recommendations": [
-                "Please consider reaching out to a mental health professional for a personalized consultation.",
-                "Ensure you are maintaining basic sleep hygiene and tracking any changes in routine daily."
-            ]
+            "summary": "Unable to safely process and compile evaluation parameters at this time.",
+            "metrics": {
+                "Mood Balance": 0,
+                "Sleep Architecture": 0,
+                "Stress Resilience": 0,
+                "Cognitive Focus": 0,
+                "Anxiety Management": 0
+            },
+            "recommendations": ["Please try reloading your assessment report panel shortly."]
         }
