@@ -66,9 +66,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 const AssessmentHeader(),
                 const SizedBox(height: 25),
                 ProgressWidget(
-                  progress: currentIndex / 6,
+                  progress: currentIndex / 15,
                   current: currentIndex,
-                  total: 6,
+                  total: 15,
                 ),
                 const SizedBox(height: 25),
                 QuestionCard(question: question.prompt),
