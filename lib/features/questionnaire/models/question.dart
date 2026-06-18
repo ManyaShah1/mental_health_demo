@@ -32,4 +32,24 @@ class Question {
     this.options = const [],
     required this.resolveNext,
   });
+  factory Question.fromJson(
+  Map<String, dynamic> json,
+) {
+  return Question(
+    id: json['id'],
+    prompt: json['question'],
+    type: QuestionType.scale,
+    options: (json['options'] as List)
+        .asMap()
+        .entries
+        .map(
+          (e) => QuestionOption(
+            label: e.value,
+            value: e.key,
+          ),
+        )
+        .toList(),
+    resolveNext: (_) => null,
+  );
+}
 }

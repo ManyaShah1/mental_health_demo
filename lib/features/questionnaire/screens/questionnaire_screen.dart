@@ -32,9 +32,15 @@ class _QuestionnaireScreenState
         answers: controller.answers,
       );
     }
-
+if (controller.currentQuestion == null) {
+  return const Scaffold(
+    body: Center(
+      child: CircularProgressIndicator(),
+    ),
+  );
+}
     final question =
-        controller.currentQuestion;
+        controller.currentQuestion!;
 
     return Scaffold(
       backgroundColor: Colors.white,
