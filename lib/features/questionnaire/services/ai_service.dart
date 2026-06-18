@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/text_analysis_result.dart';
 
 class AIService {
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = 'https://mental-health-demo.onrender.com/';
 
   /// Sends the collected answers map to the backend for full analysis evaluation
   Future<TextAnalysisResult> analyzeText(Map<String, dynamic> answers) async {
