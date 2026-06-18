@@ -58,14 +58,14 @@ class ResultScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 25),
 
-                      // Numerical Score Circular Dashboard Card
+                      // Numerical Score circular Dashboard card
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: const Color(0 deeds0E2E8F0)),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: Column(
                           children: [
@@ -94,7 +94,7 @@ class ResultScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 30),
 
-                      // Clinical Narrative Summary Analysis
+                      // Narrative Summary Analysis
                       const Text("Summary Analysis", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       Text(
@@ -103,13 +103,13 @@ class ResultScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 30),
 
-                      // 5 Detailed Progress Metrics Section
+                      // Diagnostic Metrics Sections
                       const Text("Diagnostic Metrics", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 15),
                       ...report.metrics.entries.map((entry) => _buildMetricRow(entry.key, entry.value)),
                       const SizedBox(height: 30),
 
-                      // Dynamic Treatment Plan Recommendations Card Block
+                      // Actionable Plan Frameworks
                       const Text("Actionable Frameworks", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 15),
                       ...report.recommendations.map((rec) => Padding(
@@ -154,7 +154,7 @@ class ResultScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.between,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Fixed parameter alignment syntax mapping
             children: [
               Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
               Text("$val/10", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey)),

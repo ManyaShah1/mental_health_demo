@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/text_analysis_result.dart';
+import 'config.dart'; // Make sure this points to your ApiConfig file
 
 class AIService {
-  static const String baseUrl = 'https://mental-health-demo.onrender.com';
+  // Uses centralized config baseUrl. Make sure it points to your live Render backend!
+  static const String baseUrl = ApiConfig.baseUrl;
 
-  /// Sends the collected answers map to the backend for full analysis evaluation
   Future<TextAnalysisResult> analyzeText(Map<String, dynamic> answers) async {
     try {
       final response = await http.post(
@@ -15,17 +16,25 @@ class AIService {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
         return TextAnalysisResult.fromJson(data);
       } else {
-        throw Exception('Server error during assessment analysis');
+        throw Exception('Server returned status code: ${response.statusCode}');
       }
     } catch (e) {
       print("Error in AIService.analyzeText: $e");
       return const TextAnalysisResult(
-        sentiment: 'Unknown',
-        themes: ['Unable to analyze assessment summary at this time.'],
-        riskFlag: false,
+        totalScore: 0,
+        severity: 'Unknown',
+        summary: 'Unable to safely process and compile evaluation parameters at this time.',
+        metrics: {
+          "Mood Balance": 0,
+          "Sleep Architecture": 0,
+          "Stress Resilience": 0,
+          "Cognitive Focus": 0,
+          "Anxiety Management": 0
+        },
+        recommendations: ['Please try reloading your assessment report panel shortly.'],
       );
     }
   }
