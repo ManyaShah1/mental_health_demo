@@ -16,8 +16,6 @@ class QuestionOption {
   }
 }
 
-/// Decides which question id comes next, given the answer to the
-/// current question. Returning `null` signals the end of the flow.
 typedef NextQuestionResolver = String? Function(dynamic answer);
 
 /// A single node in the questionnaire graph driven dynamically by the backend.
@@ -37,23 +35,30 @@ class Question {
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
-    // Standard option lists from static keys or simple strings converted safely
     var parsedOptions = <QuestionOption>[];
+
     if (json['options'] != null) {
-      parsedOptions = (json['options'] as List<dynamic>).map((e) {
-        if (e is String) {
-          return QuestionOption(label: e, value: 0);
+      final rawOptions = json['options'] as List<dynamic>;
+
+      for (int i = 0; i < rawOptions.length; i++) {
+        final element = rawOptions[i];
+        if (element is String) {
+          // Converts plain backend strings into the old option objects
+          parsedOptions.add(QuestionOption(label: element, value: i));
+        } else if (element is Map<String, dynamic>) {
+          parsedOptions.add(QuestionOption.fromJson(element));
         }
-        return QuestionOption.fromJson(e as Map<String, dynamic>);
-      }).toList();
+      }
     }
 
     return Question(
-      id: json['id'] as String,
+      id: json['id'] as String? ?? '',
       prompt: json['question'] as String? ?? json['prompt'] as String? ?? '',
-      type: json['type'] == 'text' ? QuestionType.text : QuestionType.scale,
+      type: (json['type'] as String? ?? 'scale').toLowerCase() == 'text'
+          ? QuestionType.text
+          : QuestionType.scale,
       options: parsedOptions,
-      resolveNext: (answer) => null, // Backend manages next paths asynchronously
+      resolveNext: (answer) => null,
     );
   }
 }

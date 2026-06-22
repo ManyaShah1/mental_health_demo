@@ -38,6 +38,9 @@ class QuestionnaireController extends ChangeNotifier {
       final data = await _service.getNextQuestion(answers);
       _handleBackendResponse(data);
     } catch (e) {
+      if (_currentQuestion != null) {
+        answers.remove(_currentQuestion!.id);
+      }
       print("Error updating question sequence: $e");
     } finally {
       _isLoading = false;
@@ -45,7 +48,9 @@ class QuestionnaireController extends ChangeNotifier {
     }
   }
 
-  void _handleBackendResponse(Map<String, dynamic> data) {
+  void _handleBackendResponse(Map<String, dynamic>? data) {
+    if (data == null) return;
+
     if (data['status'] == 'completed') {
       _isFinished = true;
       _currentQuestion = null;

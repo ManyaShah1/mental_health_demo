@@ -16,7 +16,6 @@ class QuestionnaireScreen extends StatefulWidget {
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   final QuestionnaireController controller = QuestionnaireController();
-  int currentIndex = 1;
 
   @override
   void initState() {
@@ -54,6 +53,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       );
     }
 
+    // Progress tracks directly with the answers map count
+    int currentIndex = controller.answers.length + 1;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -67,7 +69,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 const SizedBox(height: 25),
                 ProgressWidget(
                   progress: currentIndex / 15,
-                  current: currentIndex,
+                  current: currentIndex > 15 ? 15 : currentIndex,
                   total: 15,
                 ),
                 const SizedBox(height: 25),
@@ -97,14 +99,16 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     return ListView.builder(
       itemCount: question.options.length,
       itemBuilder: (context, index) {
+        final option = question.options[index];
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
           child: AnswerCard(
-            text: question.options[index].label,
+            text: option.label, // Restored original .label pattern
             color: colors[index % colors.length],
             onTap: () {
-              setState(() => currentIndex++);
-              controller.answerQuestion(question.options[index].value);
+              // Pass the option label text down to the controller map
+              controller.answerQuestion(option.label);
             },
           ),
         );
@@ -136,8 +140,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
               padding: const EdgeInsets.all(18),
             ),
             onPressed: () {
-              setState(() => currentIndex++);
-              controller.answerQuestion(controllerText.text);
+              if (controllerText.text.trim().isNotEmpty) {
+                controller.answerQuestion(controllerText.text.trim());
+              }
             },
             child: const Text("Continue"),
           ),
